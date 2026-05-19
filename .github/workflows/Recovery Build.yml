@@ -18,19 +18,19 @@ on:
       DEVICE_TREE_URL:
         description: Device Tree URL
         required: true
-        default: https://github.com/TeamWin/android_device_asus_I003D
+        default: https://github.com/twrpdtgen/android_device_infinix_Infinix-X668C.git
       DEVICE_TREE_BRANCH:
         description: Device Tree Branch
         required: true
-        default: android-12.1
+        default: main
       DEVICE_PATH:
         description: Path the device tree should be synced to, relative to source root
         required: true
-        default: device/asus/I003D
+        default: device/infinix/Infinix-X668C
       DEVICE_NAME:
         description: Device Name from tree (should match name on twrp_<DEVICE_NAME>.mk)
         required: true
-        default: I003D
+        default: Infinix-X668C
       REPOPICK_PATCHES:
         description: (Optional) Gerrit commit numbers separated by a space to be included in the build (leave blank if not using)
         type: string
@@ -43,12 +43,12 @@ on:
         - recovery
         - vendor_boot
         required: true
-        default: recovery
+        default: vendor_boot
       RECOVERY_INSTALLER:
         description: Include recovery installer zip
         type: boolean
         required: true
-        default: false
+        default: true
 
 jobs:
   build:
@@ -84,31 +84,14 @@ jobs:
 
     - name: Prepare the environment
       run: |
-        # 1. Устанавливаем утилиту для создания фальшивых пакетов
-        sudo apt update && sudo apt install -y equivs
-  
-
-        echo "Section: misc
-        Priority: optional
-        Standards-Version: 3.9.2
-        Package: libncurses5
-        Version: 6.4-fake
-        Architecture: amd64
-        Description: Fake libncurses5 package to bypass old script checks" > libncurses5-control
-
-
-        equivs-build libncurses5-control
-        sudo dpkg -i libncurses5-*.deb
-
-
-        sudo ln -sf /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncurses.so.5
-        sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
-
         sudo apt update
         sudo apt -y upgrade
-        sudo apt update && sudo apt install -y libncurses6 libtinfo6 && sudo ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncurses.so.5
+        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libncurses5_6.3-2ubuntu0.1_amd64.deb
+        sudo apt install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb ./libncurses5_6.3-2ubuntu0.1_amd64.deb
+        rm -f libtinfo5_*.deb libncurses5_*.deb
+        sudo apt -y install gperf gcc-multilib g++-multilib libc6-dev x11proto-dev libx11-dev tree lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev liblz4-tool libncurses-dev libsdl1.2-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-11-dev libtinfo6
         sudo add-apt-repository universe
-        sudo apt -y install libncurses5
 
     - name: Check Build Tree
       uses: haya14busa/action-cond@v1.2.1
