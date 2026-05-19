@@ -86,7 +86,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt -y upgrade
-        sudo apt update && sudo apt -y upgrade && sudo apt -y install bc build-essential ccache curl g++-multilib gcc-multilib git gnupg gperf lib32z1-dev liblz4-tool libncurses-dev libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop pngcrush rsync schedtool squashfs-tools xsltproc zip zlib1g-dev python3
+        sudo apt update && sudo apt install -y libncurses6 libtinfo6 && sudo ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncurses.so.5
         sudo add-apt-repository universe
         sudo apt -y install libncurses5
 
