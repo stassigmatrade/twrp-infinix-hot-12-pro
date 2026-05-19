@@ -84,6 +84,26 @@ jobs:
 
     - name: Prepare the environment
       run: |
+        # 1. Устанавливаем утилиту для создания фальшивых пакетов
+        sudo apt update && sudo apt install -y equivs
+  
+
+        echo "Section: misc
+        Priority: optional
+        Standards-Version: 3.9.2
+        Package: libncurses5
+        Version: 6.4-fake
+        Architecture: amd64
+        Description: Fake libncurses5 package to bypass old script checks" > libncurses5-control
+
+
+        equivs-build libncurses5-control
+        sudo dpkg -i libncurses5-*.deb
+
+
+        sudo ln -sf /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncurses.so.5
+        sudo ln -sf /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/x86_64-linux-gnu/libtinfo.so.5
+
         sudo apt update
         sudo apt -y upgrade
         sudo apt update && sudo apt install -y libncurses6 libtinfo6 && sudo ln -s /usr/lib/x86_64-linux-gnu/libncursesw.so.6 /usr/lib/x86_64-linux-gnu/libncurses.so.5
